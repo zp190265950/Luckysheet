@@ -16,6 +16,9 @@ import { getSheetIndex, getRangetxt } from '../methods/get';
 import locale from '../locale/locale';
 import Store from '../store';
 
+// 下拉框的值是否是文本
+const downdropIsTest = val => /^[a-zA-Z]+\d+$/.test(val)
+
 const dataVerificationCtrl = {
     defaultItem: {
         type: 'dropdown',  //类型
@@ -384,6 +387,10 @@ const dataVerificationCtrl = {
                 tooltip.info('<i class="fa fa-exclamation-triangle"></i>', '不能对多重选择区域执行此操作，请选择单个区域，然后再试');
                 return;
             }
+            if(downdropIsTest(txt)) {
+                tooltip.info('<i class="fa fa-exclamation-triangle"></i>警告', '请选择多个单元格')
+                return
+            }
 
             if(dataSource == '0'){
                 $("#luckysheet-dataVerification-dialog #data-verification-range input").val(txt);
@@ -653,10 +660,12 @@ const dataVerificationCtrl = {
 
             let type = $("#luckysheet-dataVerification-dialog #data-verification-type-select").val();
             let type2 = null, value1 = "", value2 = "";
-
+            let valueType = undefined
             if(type == 'dropdown'){
                 value1 = $("#luckysheet-dataVerification-dialog .show-box-item-dropdown .data-verification-value1").val().trim();
-            
+                if (downdropIsTest(value1)) {
+                    valueType = 'text'
+                }
                 if(value1.length == 0){
                     tooltip.info('<i class="fa fa-exclamation-triangle"></i>', dvText.tooltipInfo1);
                     return;
@@ -782,6 +791,7 @@ const dataVerificationCtrl = {
                 prohibitInput: prohibitInput,  
                 hintShow: hintShow, 
                 hintText: hintText,
+                valueType: valueType
             }
            
             let historyDataVerification = $.extend(true, {}, _this.dataVerification);
@@ -1305,7 +1315,7 @@ const dataVerificationCtrl = {
             value2 = item.value2;
 
         if(type == 'dropdown'){
-            let list = _this.getDropdownList(value1);
+            let list = _this.getDropdownList(value1, item.valueType);
 
             // 多选的情况 检查每个都在下拉列表中
             if(type2 && cellValue){
@@ -1505,7 +1515,7 @@ const dataVerificationCtrl = {
         }
 
         let item = _this.dataVerification[rowIndex + '_' + colIndex];
-        let list = _this.getDropdownList(item.value1);
+        let list = _this.getDropdownList(item.value1, item.valueType);
 
         let optionHtml = '';
         if (item.type === 'dropdown' && item.type2) {
@@ -1541,10 +1551,10 @@ const dataVerificationCtrl = {
             })
         }
     },
-    getDropdownList: function(txt){
+    getDropdownList: function(txt, valueType){
         let list = [];
 
-        if(formula.iscelldata(txt)){
+        if(formula.iscelldata(txt) && valueType !== 'text'){
             let range = formula.getcellrange(txt);
             let d = Store.luckysheetfile[getSheetIndex(range.sheetIndex)].data;
 
