@@ -81,7 +81,8 @@ const imageCtrl = {
         let colIndex = last.column_focus || 0;
         let left = colIndex == 0 ? 0 : Store.visibledatacolumn[colIndex - 1];
         let top = rowIndex == 0 ? 0 : Store.visibledatarow[rowIndex - 1];
-
+        left = left / Store.zoomRatio
+        top = top / Store.zoomRatio
         let image = new Image();
         image.onload = function(){
             let width = image.width,
@@ -682,12 +683,14 @@ const imageCtrl = {
         imgItem.src = img.src;
         imgItem.originWidth = img.originWidth;
         imgItem.originHeight = img.originHeight;
-        imgItem.default.width = width;
-        imgItem.default.height = height;
+        // imgItem.default.width = width;
+        // imgItem.default.height = height;
+        imgItem.default.width = Store.luckysheet_select_save[0]?.width / Store.zoomRatio;
+        imgItem.default.height = Store.luckysheet_select_save[0]?.height / Store.zoomRatio;
         imgItem.default.left = img.left;
         imgItem.default.top = img.top;
-        imgItem.crop.width = width;
-        imgItem.crop.height = height;
+        imgItem.crop.width = Store.luckysheet_select_save[0]?.width / Store.zoomRatio;
+        imgItem.crop.height = Store.luckysheet_select_save[0]?.height / Store.zoomRatio;
 
         let scrollTop = $("#luckysheet-cell-main").scrollTop(), 
             scrollLeft = $("#luckysheet-cell-main").scrollLeft();
