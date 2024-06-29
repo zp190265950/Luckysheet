@@ -1672,9 +1672,9 @@ const menuButton = {
             const _locale = locale();
             const locale_merge = _locale.merge;
 
-            if (!checkProtectionNotEnable(Store.currentSheetIndex)) {
-                return;
-            }
+            // if (!checkProtectionNotEnable(Store.currentSheetIndex)) {
+            //     return;
+            // }
 
             if (selectIsOverlap()) {
                 if (isEditMode()) {
@@ -3963,7 +3963,7 @@ const menuButton = {
             cfg["merge"] = {};
         }
 
-        if (!checkProtectionNotEnable(Store.currentSheetIndex)) {
+        if (!['mergeAll', 'mergeV', 'mergeH', 'mergeCancel'].includes(foucsStatus) && !checkProtectionNotEnable(Store.currentSheetIndex)) {
             return;
         }
 
